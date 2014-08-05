@@ -1,0 +1,70 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/**
+ * Copyright (c) 2014,  Regents of the University of California
+ *
+ * This file is part of NSL (NDN Signature Logger).
+ * See AUTHORS.md for complete list of NSL authors and contributors.
+ *
+ * NSL is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation,
+ * either version 3 of the License, or (at your option) any later version.
+ *
+ * NSL is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE.  See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * NSL, e.g., in COPYING.md file.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * \author Yingdi Yu <yingdi@cs.ucla.edu>
+ */
+
+#ifndef NSL_VERSION_HPP
+#define NSL_VERSION_HPP
+
+namespace nsl {
+
+/** NSL version follows Semantic Versioning 2.0.0 specification
+ *  http://semver.org/
+ */
+
+// To change version number, modify VERSION variable in top-level wscript.
+
+/** \brief NSL version represented as an integer
+ *
+ *  MAJOR*1000000 + MINOR*1000 + PATCH
+ */
+#define NSL_VERSION @VERSION@
+
+/** \brief NSL version represented as a string
+ *
+ *  MAJOR.MINOR.PATCH
+ */
+#define NSL_VERSION_STRING "@VERSION_STRING@"
+
+/** \brief NSL version string, including git commit information, if NSL
+ *         is build from specific git commit
+ *
+ * NSL_VERSION_BUILD_STRING is obtained using the following command (`NSL-` prefix is
+ * afterwards removed):
+ *
+ *    `git describe --match 'NSL-*'`
+ *
+ * When NSL is built not from git, NSL_VERSION_BUILD_STRING equals NSL_VERSION_STRING
+ *
+ * MAJOR.MINOR.PATCH(-release-candidate-tag)(-(number-of-commits-since-tag)-COMMIT-HASH)
+ *
+ * Example, 0.1.0-rc1-1-g5c86570
+ */
+#define NSL_VERSION_BUILD_STRING "@VERSION_BUILD@"
+
+/// MAJOR version
+#define NSL_VERSION_MAJOR @VERSION_MAJOR@
+/// MINOR version
+#define NSL_VERSION_MINOR @VERSION_MINOR@
+/// PATCH version
+#define NSL_VERSION_PATCH @VERSION_PATCH@
+
+} // namespace nsl
+
+#endif // NSL_VERSION_HPP
