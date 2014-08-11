@@ -16,12 +16,15 @@ NSL Documentation
    README
    INSTALL
    manpages
+   design
 
 - :doc:`README`
 
 - :doc:`INSTALL`
 
 - :doc:`manpages`
+
+- :doc:`design`
 
 Documentation for ndn-cxx developers and contributors
 +++++++++++++++++++++++++++++++++++++++++++++++++++++
