@@ -16,48 +16,108 @@
  * You should have received a copy of the GNU General Public License along with
  * NSL, e.g., in COPYING.md file.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author Peizhen Guo <patrick.guopz@gmail.com>
+ * See AUTHORS.md for complete list of nsl authors and contributors.
  */
 #include "node.hpp"
 
+#include <ndn-cxx/util/digest.hpp>
+#include <boost/lexical_cast.hpp>
+
 namespace nsl {
 
-Node::Node(uint64_t sequenceNumber, uint64_t level, time_t timestamp)
+ndn::ConstBufferPtr Node::EMPTY_HASH;
+
+Node::Index::Index(const NonNegativeInteger& nodeSeq, size_t nodeLevel)
+  : seqNo(nodeSeq)
+  , level(nodeLevel)
+  , range(1 << nodeLevel)
 {
-  m_index.number = sequenceNumber;
-  m_index.level = level;
-  m_timeStamp = timestamp;
+  if (seqNo % range != 0)
+    throw Error("Index: index level and seqNo do not match: (" +
+                boost::lexical_cast<std::string>(seqNo) + ", " +
+                boost::lexical_cast<std::string>(level) + ")");
 }
 
-
-const Index&
-Node::getIndex() const
+bool
+Node::Index::operator<(const Index& other) const
 {
-  return m_index;
+  if (seqNo < other.seqNo) {
+    return true;
+  }
+  else if (seqNo == other.seqNo) {
+    return level < other.level;
+  }
+  else {
+    return false;
+  }
 }
 
-
-
-time_t
-Node::getTimestamp() const
+bool
+Node::Index::operator==(const Index& other) const
 {
-  return m_timeStamp;
+  return equals(other);
 }
 
+bool
+Node::Index::operator!=(const Index& other) const
+{
+  return !equals(other);
+}
 
+bool
+Node::Index::equals(const Index& other) const
+{
+  if (seqNo == other.seqNo && level == other.level) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+Node::Node(const NonNegativeInteger& nodeSeqNo,
+           size_t nodeLevel,
+           const NonNegativeInteger& leafSeqNo,
+           ndn::ConstBufferPtr hash)
+  : m_index(nodeSeqNo, nodeLevel)
+  , m_hash(hash)
+{
+  if (leafSeqNo == 0 && m_index.seqNo > leafSeqNo)
+    m_leafSeqNo = m_index.seqNo;
+  else
+    setLeafSeqNo(leafSeqNo);
+}
 
 void
-Node::setHash(ndn::ConstBufferPtr digest)
+Node::setLeafSeqNo(const NonNegativeInteger& leafSeqNo)
 {
-  m_hash = digest;
+  if (leafSeqNo > m_index.seqNo + m_index.range || leafSeqNo < m_index.seqNo)
+    throw Error("Node: leaf seqNo is out of range");
+
+  m_leafSeqNo = leafSeqNo;
 }
 
+void
+Node::setHash(ndn::ConstBufferPtr hash)
+{
+  m_hash = hash;
+}
 
+bool
+Node::isFull() const
+{
+  return m_index.seqNo + m_index.range == m_leafSeqNo;
+}
 
 ndn::ConstBufferPtr
-Node::getHash() const
+Node::getEmptyHash()
 {
-  return m_hash;
+  if (EMPTY_HASH == nullptr) {
+    ndn::util::Sha256 sha256;
+    EMPTY_HASH = sha256.computeDigest();
+  }
+
+  return EMPTY_HASH;
 }
 
 } // namespace nsl

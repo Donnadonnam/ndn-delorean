@@ -16,59 +16,47 @@
  * You should have received a copy of the GNU General Public License along with
  * NSL, e.g., in COPYING.md file.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author Peizhen Guo <patrick.guopz@gmail.com>
+ * See AUTHORS.md for complete list of nsl authors and contributors.
  */
-#ifndef NLS_CORE_AUDITOR_HPP
-#define NLS_CORE_AUDITOR_HPP
 
-#include <string>
+#ifndef NSL_CORE_AUDITOR_HPP
+#define NSL_CORE_AUDITOR_HPP
+
+#include "common.hpp"
+#include "node.hpp"
+#include "sub-tree-binary.hpp"
+#include "util/non-negative-integer.hpp"
+#include <ndn-cxx/encoding/buffer.hpp>
 #include <vector>
 
-#include <math.h>
-#include <stdint.h>
-
-#include <ndn-cxx/util/crypto.hpp>
-
-#include "node.hpp"
-
 namespace nsl {
-
-typedef ndn::shared_ptr<const Node> ConstNodePtr;
-typedef ndn::shared_ptr<Node> NodePtr;
 
 class Auditor
 {
 public:
-  Auditor()
-  {
-  }
+  static bool
+  doesExist(const NonNegativeInteger& seqNo,
+            ndn::ConstBufferPtr hash,
+            const NonNegativeInteger& rootNextSeqNo,
+            ndn::ConstBufferPtr rootHash,
+            const std::vector<shared_ptr<Data>>& proofs,
+            const Name& loggerName);
 
+  static bool
+  isConsistent(const NonNegativeInteger& seqNo,
+               ndn::ConstBufferPtr hash,
+               const NonNegativeInteger& rootNextSeqNo,
+               ndn::ConstBufferPtr rootHash,
+               const std::vector<shared_ptr<Data>>& proofs,
+               const Name& loggerName);
 
-  ~Auditor()
-  {
-  }
-
-
-  bool
-  verifyConsistency(uint64_t version1, uint64_t version2, ndn::ConstBufferPtr hash1,
-                    ndn::ConstBufferPtr hash2, std::vector<ConstNodePtr> proof);
-
-
-  std::vector<Node*>
-  queryByTime(time_t);
-
-  ndn::ConstBufferPtr
-  computeHash(ndn::ConstBufferPtr hash_l, ndn::ConstBufferPtr hash_r);
-
-
-  ndn::ConstBufferPtr
-  computeHashOneSide(ndn::ConstBufferPtr hash_l);
-
-
-private:
-
+NSL_PUBLIC_WITH_TESTS_ELSE_PRIVATE:
+  static bool
+  loadProof(std::map<Node::Index, ConstSubTreeBinaryPtr>& trees,
+            const std::vector<shared_ptr<Data>>& proofs,
+            const Name& loggerName);
 };
 
 } // namespace nsl
 
-#endif // NLS_CORE_AUDITOR_HPP
+#endif // NSL_CORE_AUDITOR_HPP

@@ -16,125 +16,205 @@
  * You should have received a copy of the GNU General Public License along with
  * NSL, e.g., in COPYING.md file.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author Peizhen Guo <patrick.guopz@gmail.com>
+ * See AUTHORS.md for complete list of nsl authors and contributors.
  */
+
 #include "merkle-tree.hpp"
 
 namespace nsl {
 
-MerkleTree::MerkleTree()
+MerkleTree::MerkleTree(Db& db)
+  : m_db(db)
+  , m_nextLeafSeqNo(0)
 {
-  m_nLevels = 0;
-  m_nLeaves = 0;
 }
 
-
-ConstNodePtr
-MerkleTree::getNode(const Index& index)
+MerkleTree::MerkleTree(const Name& loggerName, Db& db)
+  : m_loggerName(loggerName)
+  , m_db(db)
+  , m_nextLeafSeqNo(0)
 {
-  ConstNodePtr p_leav;
-  if (m_cache.doesNodeExist(index))
-    {
-      p_leav = m_cache.queryNode(index);
-      return p_leav;
+  loadPendingSubTrees();
+}
+
+MerkleTree::~MerkleTree()
+{
+  savePendingTree();
+}
+
+void
+MerkleTree::setLoggerName(const Name& loggerName)
+{
+  m_loggerName = loggerName;
+}
+
+bool
+MerkleTree::addLeaf(const NonNegativeInteger& seqNo, ndn::ConstBufferPtr hash)
+{
+  auto baseTree = m_pendingTrees[SubTreeBinary::SUB_TREE_DEPTH - 1];
+  BOOST_ASSERT(baseTree != nullptr);
+
+  NodePtr leaf = make_shared<Node>(seqNo, 0, seqNo + 1, hash);
+  return baseTree->addLeaf(leaf);
+}
+
+void
+MerkleTree::savePendingTree()
+{
+  size_t level = m_rootSubTree->getPeakIndex().level;
+  size_t step = SubTreeBinary::SUB_TREE_DEPTH - 1;
+
+  for (size_t i = level; i > 0; i -= step) {
+    auto pendingTree = m_pendingTrees[i];
+    BOOST_ASSERT(pendingTree != nullptr);
+
+    auto data = pendingTree->encode();
+    if (data != nullptr) {
+      m_db.insertSubTreeData(pendingTree->getPeakIndex().level, pendingTree->getPeakIndex().seqNo,
+                             *data, false, pendingTree->getNextLeafSeqNo());
     }
+  }
+}
+
+shared_ptr<Data>
+MerkleTree::getPendingSubTreeData(size_t level)
+{
+  auto it = m_pendingTrees.find(level);
+  if (it != m_pendingTrees.end())
+    return it->second->encode();
   else
-    return p_leav;
+    return nullptr;
 }
 
-
-uint64_t
-MerkleTree::getLeafNum() const
+// private:
+void
+MerkleTree::loadPendingSubTrees()
 {
-  return m_nLeaves;
+  std::vector<shared_ptr<Data>> subtreeDatas = m_db.getPendingSubTrees();
+
+  shared_ptr<SubTreeBinary> subtree;
+  if (subtreeDatas.empty()) {
+    subtree = make_shared<SubTreeBinary>(m_loggerName,
+      Node::Index(0, SubTreeBinary::SUB_TREE_DEPTH - 1),
+      [this] (const Node::Index& idx) {
+        // std::cerr << "complete: " << idx.level << ", " << idx.seqNo << std::endl;
+        this->getNewRoot(idx);
+      },
+      [this] (const Node::Index& idx,
+              const NonNegativeInteger& seqNo,
+              ndn::ConstBufferPtr hash) {
+        // std::cerr << "update: " << idx.level << ", " << idx.seqNo << std::endl;
+        // std::cerr << "seqNo: " << seqNo << std::endl;
+        this->m_nextLeafSeqNo = seqNo;
+        this->m_hash = hash;
+      });
+    m_pendingTrees[SubTreeBinary::SUB_TREE_DEPTH - 1] = subtree;
+    m_rootSubTree = subtree;
+    return;
+  }
+
+  subtree = make_shared<SubTreeBinary>(m_loggerName,
+    [this] (const Node::Index& idx) { this->getNewRoot(idx); },
+    [this] (const Node::Index& idx,
+            const NonNegativeInteger& seqNo,
+            ndn::ConstBufferPtr hash) {
+      this->m_nextLeafSeqNo = seqNo;
+      this->m_hash = hash;
+    });
+
+  subtree->decode(*subtreeDatas[0]);
+  m_pendingTrees[subtree->getPeakIndex().level] = subtree;
+  m_rootSubTree = subtree;
+
+  shared_ptr<SubTreeBinary> parentTree = subtree;
+  for (size_t i = 1; i < subtreeDatas.size(); i++) {
+    subtree = make_shared<SubTreeBinary>(m_loggerName,
+      [this] (const Node::Index& idx) {
+        this->getNewSibling(idx);
+      },
+      [parentTree] (const Node::Index&,
+           const NonNegativeInteger& seqNo,
+           ndn::ConstBufferPtr hash) {
+        parentTree->updateLeaf(seqNo, hash);
+      });
+
+    subtree->decode(*subtreeDatas[i]);
+    if (parentTree->getPeakIndex().level + 1 - SubTreeBinary::SUB_TREE_DEPTH !=
+        subtree->getPeakIndex().level)
+      throw Error("loadPendingSubTrees: inconsistent pending subtree level");
+
+    if (parentTree->getNextLeafSeqNo() != subtree->getNextLeafSeqNo())
+      throw Error("loadPendingSubTrees: inconsistent pending subtree next leaf seqNo");
+
+    m_pendingTrees[subtree->getPeakIndex().level] = subtree;
+    parentTree = subtree;
+  }
 }
 
-
-uint64_t
-MerkleTree::getLevel() const
+void
+MerkleTree::getNewRoot(const Node::Index& idx)
 {
-  return m_nLevels;
+  // save the old root tree into db
+  auto oldRoot = m_pendingTrees[idx.level];
+  BOOST_ASSERT(oldRoot != nullptr);
+  m_db.insertSubTreeData(idx.level, idx.seqNo, *oldRoot->encode());
+
+  // create a new root tree
+  Node::Index newRootIdx(0, idx.level + SubTreeBinary::SUB_TREE_DEPTH - 1);
+  auto newRoot = make_shared<SubTreeBinary>(m_loggerName, newRootIdx,
+    [this] (const Node::Index& idx) {
+      // std::cerr << "complete: " << idx.level << ", " << idx.seqNo << std::endl;
+      this->getNewRoot(idx);
+    },
+    [this] (const Node::Index& index,
+         const NonNegativeInteger& seqNo,
+         ndn::ConstBufferPtr hash) {
+      // std::cerr << "update: " << index.level << ", " << index.seqNo << std::endl;
+      // std::cerr << "seqNo: " << seqNo << std::endl;
+      this->m_nextLeafSeqNo = seqNo;
+      this->m_hash = hash;
+    });
+
+  m_pendingTrees[newRoot->getPeakIndex().level] = newRoot;
+  m_rootSubTree = newRoot;
+
+  bool result = newRoot->updateLeaf(idx.seqNo + idx.range, oldRoot->getRoot()->getHash());
+  BOOST_ASSERT(result);
+
+  // create a sibling
+  getNewSibling(idx);
 }
 
-
-
-uint64_t
-MerkleTree::addLeaf(ndn::ConstBufferPtr info)
+void
+MerkleTree::getNewSibling(const Node::Index& idx)
 {
-  Leaf new_leaf(info, m_nLeaves, 0, 0);
-  new_leaf.computeHash(); // computeHash() has been written.
-  m_nLeaves++;
-  if (m_nLeaves > int(pow(2, int(m_nLevels) - 1)))
-    {
-      m_nLevels++;
-    }
-  m_cache.addLeaf(new_leaf);
-  return m_nLeaves - 1;
+  // save old sibling
+  auto oldSibling = m_pendingTrees[idx.level];
+  BOOST_ASSERT(oldSibling != nullptr);
+  m_db.insertSubTreeData(idx.level, idx.seqNo, *oldSibling->encode());
+
+  // get parent tree
+  Node::Index parentIdx(0, idx.level + SubTreeBinary::SUB_TREE_DEPTH - 1);
+  auto parent = m_pendingTrees[parentIdx.level];
+  BOOST_ASSERT(parent != nullptr);
+
+  // create a new sibling
+  Node::Index newSiblingIdx(idx.seqNo + idx.range, idx.level);
+  // std::cerr << "new Sibling: " << newSiblingIdx.level << ", " << newSiblingIdx.seqNo << std::endl;
+  auto newSibling = make_shared<SubTreeBinary>(m_loggerName, newSiblingIdx,
+    [this] (const Node::Index& idx) { this->getNewSibling(idx); },
+    [parent] (const Node::Index& index,
+         const NonNegativeInteger& seqNo,
+         ndn::ConstBufferPtr hash) {
+      // std::cerr << "update: " << index.level << ", " << index.seqNo << std::endl;
+      // std::cerr << "seqNo: " << seqNo << std::endl;
+      // std::cerr << "parent: " << parent->getRoot()->getIndex().level << ", " <<
+      //                            parent->getRoot()->getIndex().seqNo << std::endl;
+      bool result = parent->updateLeaf(seqNo, hash);
+      BOOST_ASSERT(result);
+    });
+
+  m_pendingTrees[newSibling->getPeakIndex().level] = newSibling;
 }
 
-
-std::vector<ConstNodePtr>
-MerkleTree::generateProof(uint64_t version1, uint64_t version2)
-{
-  std::vector<ConstNodePtr> proof;
-  if (version1 >= version2)
-    {
-      return proof;
-    }
-
-  //add a memberproof from version2
-  Index this_idx;
-  this_idx.number = version2;
-  this_idx.level = 0;
-  ConstNodePtr p_leav;
-  p_leav = m_cache.queryNode(this_idx);
-  proof.push_back(p_leav);
-  if ((this_idx.number % 2) != 0)
-    {
-      this_idx.number -= 1;
-      p_leav = m_cache.queryNode(this_idx);
-      proof.push_back(p_leav);
-    }
-  this_idx.level += 1;
-  this_idx.number -= this_idx.number % 2;
-  for (int i = 1; i < m_nLevels - 1 ; i++)
-    {
-      if (this_idx.number % int(pow(2, i + 1)) != 0)
-        {
-          this_idx.number -= int(pow(2, i));
-          p_leav = m_cache.queryNode(this_idx);
-          proof.push_back(p_leav);
-        }
-      this_idx.level += 1;
-      this_idx.number -= this_idx.number % int(pow(2, i + 1));
-    }
-
-  //add another path from version1
-  this_idx.number = version1;
-  this_idx.level = 0;
-  p_leav = m_cache.queryNode(this_idx);
-  proof.push_back(p_leav);
-  if ((this_idx.number % 2) != 0)
-    {
-      this_idx.number -= 1;
-      p_leav = m_cache.queryNode(this_idx);
-      proof.push_back(p_leav);
-    }
-  this_idx.level += 1;
-  this_idx.number -= this_idx.number % 2;
-  for (int i = 1; i < m_nLevels - 1 ; i++)
-    {
-      if (this_idx.number % int(pow(2, i + 1)) != 0)
-        {
-          this_idx.number -= int(pow(2, i));
-          p_leav = m_cache.queryNode(this_idx);
-          proof.push_back(p_leav);
-        }
-      this_idx.level += 1;
-      this_idx.number -= this_idx.number % int(pow(2, i + 1));
-    }
-
-  return proof;
-}
-
-} // namespace nsl
+}// namespace nsl

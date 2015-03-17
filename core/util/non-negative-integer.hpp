@@ -19,24 +19,13 @@
  * See AUTHORS.md for complete list of nsl authors and contributors.
  */
 
-
-#ifndef NSL_CORE_TLV_HPP
-#define NSL_CORE_TLV_HPP
+#ifndef NSL_UTIL_NON_NEGATIVE_INTEGER_HPP
+#define NSL_UTIL_NON_NEGATIVE_INTEGER_HPP
 
 namespace nsl {
-namespace tlv {
 
-/**
- * @brief Type value of leaf related TLVs
- */
-enum {
-  LoggerLeaf  = 128, // 0x80
-  Timestamp   = 129, // 0x81
-  DataSeqNo   = 130, // 0x82
-  SignerSeqNo = 131  // 0x83
-};
+typedef uint64_t NonNegativeInteger;
 
-} // namespace tlv
 } // namespace nsl
 
-#endif // NSL_CORE_TLV_HPP
+#endif // NSL_UTIL_NON_NEGATIVE_INTEGER_HPP

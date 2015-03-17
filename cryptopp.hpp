@@ -19,24 +19,27 @@
  * See AUTHORS.md for complete list of nsl authors and contributors.
  */
 
+#ifndef NSL_CRYPTOPP_HPP
+#define NSL_CRYPTOPP_HPP
 
-#ifndef NSL_CORE_TLV_HPP
-#define NSL_CORE_TLV_HPP
+// suppress CryptoPP warnings
+#pragma GCC system_header
+#pragma clang system_header
 
-namespace nsl {
-namespace tlv {
+#include <cryptopp/asn.h>
+#include <cryptopp/base64.h>
+#include <cryptopp/des.h>
+#include <cryptopp/files.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/hex.h>
+#include <cryptopp/modes.h>
+#include <cryptopp/osrng.h>
+#include <cryptopp/pssr.h>
+#include <cryptopp/pwdbased.h>
+#include <cryptopp/rsa.h>
+#include <cryptopp/sha.h>
+#include <cryptopp/eccrypto.h>
+#include <cryptopp/oids.h>
+#include <cryptopp/dsa.h>
 
-/**
- * @brief Type value of leaf related TLVs
- */
-enum {
-  LoggerLeaf  = 128, // 0x80
-  Timestamp   = 129, // 0x81
-  DataSeqNo   = 130, // 0x82
-  SignerSeqNo = 131  // 0x83
-};
-
-} // namespace tlv
-} // namespace nsl
-
-#endif // NSL_CORE_TLV_HPP
+#endif // NSL_CRYPTOPP_HPP

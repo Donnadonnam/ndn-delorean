@@ -3,6 +3,9 @@ NSL authors
 
 ## The primary authors are (and/or have been):
 
+* Yingdi Yu <http://irl.cs.ucla.edu/~yingdi/>
+* Peizhen Guo <patrick.guopz@gmail.com>
+
 
 ## All project authors and contributors
 

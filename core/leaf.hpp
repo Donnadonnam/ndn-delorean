@@ -16,56 +16,128 @@
  * You should have received a copy of the GNU General Public License along with
  * NSL, e.g., in COPYING.md file.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author Peizhen Guo <patrick.guopz@gmail.com>
+ * See AUTHORS.md for complete list of nsl authors and contributors.
  */
-#ifndef NLS_CORE_LEAF_HPP
-#define NLS_CORE_LEAF_HPP
 
-#include <vector>
-#include <ndn-cxx/util/crypto.hpp>
-#include "node.hpp"
+#ifndef NSL_CORE_LEAF_HPP
+#define NSL_CORE_LEAF_HPP
+
+#include "common.hpp"
+#include "util/non-negative-integer.hpp"
+#include "util/timestamp.hpp"
+#include <ndn-cxx/encoding/buffer.hpp>
 
 namespace nsl {
 
-class Leaf : public Node
+class Leaf
 {
 public:
-
-  Leaf()
-    : Node()
+  class Error : public std::runtime_error
   {
+  public:
+    explicit
+    Error(const std::string& what)
+      : std::runtime_error(what)
+    {
+    }
+  };
+
+public:
+  Leaf();
+
+  Leaf(const Name& dataName,
+       const Timestamp& timestamp,
+       const NonNegativeInteger& leafSeqNo,
+       const NonNegativeInteger& signerSeqNo,
+       const Name& loggerName = EMPTY_NAME);
+
+  void
+  setDataSeqNo(const NonNegativeInteger& dataSeqNo);
+
+  const NonNegativeInteger&
+  getDataSeqNo() const
+  {
+    return m_dataSeqNo;
   }
 
+  void
+  setDataName(const Name& dataName);
 
-  Leaf(ndn::ConstBufferPtr data, uint64_t sequenceNumber, uint64_t level, time_t timestamp)
-    : Node(sequenceNumber, level, timestamp), m_data(data)
+  const Name&
+  getDataName() const
   {
+    return m_dataName;
   }
 
+  void
+  setTimestamp(const Timestamp& timestamp);
 
-  Leaf(const Leaf& new_leaf)
-    : Node(new_leaf.getIndex().number, new_leaf.getIndex().level, new_leaf.getTimestamp())
+  const Timestamp&
+  getTimestamp() const
   {
-    m_data = new_leaf.getData();
-    this->setHash(new_leaf.getHash());
+    return m_timestamp;
   }
 
+  void
+  setSignerSeqNo(const NonNegativeInteger& signerSeqNo);
 
-  ~Leaf()
+  const NonNegativeInteger&
+  getSignerSeqNo() const
   {
+    return m_signerSeqNo;
+  }
+
+  void
+  setLoggerName(const Name& loggerName);
+
+  const Name&
+  getLoggerName() const
+  {
+    return m_loggerName;
   }
 
   ndn::ConstBufferPtr
-  getData() const;
+  getHash() const;
 
+  shared_ptr<Data>
+  encode() const;
 
   void
-  computeHash();
+  decode(const Data& data);
+
+NSL_PUBLIC_WITH_TESTS_ELSE_PRIVATE:
+  /// @brief Encode to a wire format or estimate wire format
+  template<ndn::encoding::Tag TAG>
+  size_t
+  wireEncode(ndn::EncodingImpl<TAG>& block) const;
+
+  /// @brief Encode to a wire format
+  const Block&
+  wireEncode() const;
+
+  /// @brief Decode from a wire format
+  void
+  wireDecode(const Block& wire);
+
+public:
+  static const Name EMPTY_NAME;
+
+NSL_PUBLIC_WITH_TESTS_ELSE_PRIVATE:
+  static const size_t N_LOGGER_LEAF_SUFFIX;
+  static const ssize_t OFFSET_LEAF_SEQNO;
+  static const ssize_t OFFSET_LEAF_HASH;
 
 private:
-  ndn::ConstBufferPtr m_data;
+  Name m_dataName;
+  Timestamp m_timestamp;
+  NonNegativeInteger m_dataSeqNo;
+  NonNegativeInteger m_signerSeqNo;
+
+  mutable Block m_wire;
+
+  Name m_loggerName;
 };
 
 } // namespace nsl
 
-#endif // NLS_CORE_LEAF_HPP
+#endif // NSL_CORE_LEAF_HPP

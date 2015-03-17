@@ -16,92 +16,109 @@
  * You should have received a copy of the GNU General Public License along with
  * NSL, e.g., in COPYING.md file.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author Peizhen Guo <patrick.guopz@gmail.com>
+ * See AUTHORS.md for complete list of nsl authors and contributors.
  */
 
-#ifndef NLS_CORE_NODE_HPP
-#define NLS_CORE_NODE_HPP
-#include <stddef.h>
-#include <time.h>
+#ifndef NSL_CORE_NODE_HPP
+#define NSL_CORE_NODE_HPP
 
-#include <ndn-cxx/util/crypto.hpp>
+#include "common.hpp"
+#include "util/non-negative-integer.hpp"
+#include <ndn-cxx/encoding/buffer.hpp>
 
 namespace nsl {
-
-class Index
-{
-public:
-  Index()
-  {
-  }
-
-  Index(const Index& idx)
-    : number(idx.number),
-      level(idx.level)
-  {
-  }
-
-  bool operator<(const Index& other) const
-  {
-    if (number < other.number)
-      {
-        return true;
-      }
-    else if (number == other.number)
-      {
-        return level < other.level;
-      }
-    else
-      {
-        return false;
-      }
-
-  }
-
-public:
-  uint64_t number;
-  uint64_t level;
-};
-
 
 class Node
 {
 public:
-
-  Node()
+  class Error : public std::runtime_error
   {
-  }
+  public:
+    explicit
+    Error(const std::string& what)
+      : std::runtime_error(what)
+    {
+    }
+  };
 
-
-  Node(uint64_t sequenceNumber, uint64_t level, time_t timestamp);
-
-
-  ~Node()
+  class Index
   {
-  }
+  public:
+    explicit
+    Index(const NonNegativeInteger& seqNo = 0, size_t level = 0);
 
+    /**
+     * @brief compare two indices
+     *
+     * A index is larger than the other if its seqNo is larger than the other,
+     * or their seqNos are equal but its level is lower.
+     */
+    bool
+    operator<(const Index& other) const;
+
+    bool
+    operator==(const Index& other) const;
+
+    bool
+    operator!=(const Index& other) const;
+
+    bool
+    equals(const Index& other) const;
+
+  public:
+    NonNegativeInteger seqNo;
+    size_t level;
+    NonNegativeInteger range;
+  };
+
+public:
+  Node(const NonNegativeInteger& seqNo,
+       size_t level,
+       const NonNegativeInteger& leafSeqNo = 0,
+       ndn::ConstBufferPtr hash = nullptr);
 
   const Index&
-  getIndex() const;
-
-
-  time_t
-  getTimestamp() const;
-
+  getIndex() const
+  {
+    return m_index;
+  }
 
   void
-  setHash(ndn::ConstBufferPtr digest);
+  setLeafSeqNo(const NonNegativeInteger& leafSeqNo);
 
+  const NonNegativeInteger&
+  getLeafSeqNo() const
+  {
+    return m_leafSeqNo;
+  }
+
+  void
+  setHash(ndn::ConstBufferPtr hash);
 
   ndn::ConstBufferPtr
-  getHash() const;
+  getHash() const
+  {
+    return m_hash;
+  }
+
+  bool
+  isFull() const;
+
+  static ndn::ConstBufferPtr
+  getEmptyHash();
+
+protected:
+  Index m_index;
+  NonNegativeInteger m_leafSeqNo;
+  ndn::ConstBufferPtr m_hash;
 
 private:
-  ndn::ConstBufferPtr m_hash;
-  Index m_index;   // Node index.number starts from 0 (the index of current root)
-  time_t m_timeStamp;
+  static ndn::ConstBufferPtr EMPTY_HASH;
 };
+
+typedef shared_ptr<Node> NodePtr;
+typedef shared_ptr<const Node> ConstNodePtr;
 
 } // namespace nsl
 
-#endif // NLS_CORE_NODE_HPP
+#endif // NSL_CORE_NODE_HPP

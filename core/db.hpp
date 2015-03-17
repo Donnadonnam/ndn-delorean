@@ -19,17 +19,19 @@
  * See AUTHORS.md for complete list of nsl authors and contributors.
  */
 
-#ifndef NSL_CORE_MERKLE_TREE_HPP
-#define NSL_CORE_MERKLE_TREE_HPP
+#ifndef NSL_CORE_DB_HPP
+#define NSL_CORE_DB_HPP
 
 #include "common.hpp"
-#include "db.hpp"
-#include "sub-tree-binary.hpp"
+#include "leaf.hpp"
+#include "util/non-negative-integer.hpp"
 #include <vector>
+
+struct sqlite3;
 
 namespace nsl {
 
-class MerkleTree
+class Db : noncopyable
 {
 public:
   class Error : public std::runtime_error
@@ -43,66 +45,40 @@ public:
   };
 
 public:
-  /**
-   * @brief Constructor
-   */
-  MerkleTree(Db& db);
-
-  MerkleTree(const Name& loggerName, Db& db);
-
-  ~MerkleTree();
-
   void
-  setLoggerName(const Name& loggerName);
-
-  const NonNegativeInteger&
-  getNextLeafSeqNo() const
-  {
-    return m_nextLeafSeqNo;
-  }
-
-  const ndn::ConstBufferPtr&
-  getRootHash() const
-  {
-    return m_hash;
-  }
+  open(const std::string& dbDir);
 
   bool
-  addLeaf(const NonNegativeInteger& seqNo, ndn::ConstBufferPtr hash);
-
-  void
-  loadPendingSubTrees();
-
-  void
-  savePendingTree();
+  insertSubTreeData(size_t level, const NonNegativeInteger& seqNo,
+                    const Data& data,
+                    bool isFull = true,
+                    const NonNegativeInteger& nextLeafSeqNo = 0);
 
   shared_ptr<Data>
-  getPendingSubTreeData(size_t level);
+  getSubTreeData(size_t level, const NonNegativeInteger& seqNo);
 
-  std::vector<ConstSubTreeBinaryPtr>
-  getExistenceProof(const NonNegativeInteger& seqNo);
+  std::vector<shared_ptr<Data>>
+  getPendingSubTrees();
 
-  std::vector<ConstSubTreeBinaryPtr>
-  getConsistencyProof(const NonNegativeInteger& seqNo);
+  bool
+  insertLeafData(const Leaf& leaf);
+
+  bool
+  insertLeafData(const Leaf& leaf, const Data& data);
+
+  std::pair<shared_ptr<Leaf>, shared_ptr<Data>>
+  getLeaf(const NonNegativeInteger& seqNo);
+
+NSL_PUBLIC_WITH_TESTS_ELSE_PRIVATE:
+  const NonNegativeInteger&
+  getMaxLeafSeq();
 
 private:
-  void
-  getNewRoot(const Node::Index& idx);
+  sqlite3* m_db;
 
-  void
-  getNewSibling(const Node::Index& idx);
-
-private:
-  Name m_loggerName;
-  Db& m_db;
-
-  shared_ptr<SubTreeBinary> m_rootSubTree;
   NonNegativeInteger m_nextLeafSeqNo;
-  ndn::ConstBufferPtr m_hash;
-
-  std::map<size_t, shared_ptr<SubTreeBinary>> m_pendingTrees;
 };
 
-}// namespace nsl
+} // namespace nsl
 
-#endif // NSL_CORE_MERKLE_TREE_HPP
+#endif // NSL_CORE_DB_HPP

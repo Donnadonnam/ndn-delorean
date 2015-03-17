@@ -80,7 +80,7 @@ def configure(conf):
 
     conf.define('DEFAULT_CONFIG_FILE', '%s/ndn/nsl.conf' % conf.env['SYSCONFDIR'])
 
-    conf.write_config_header('config.hpp')
+    conf.write_config_header('config.hpp', define_prefix='NSL_')
 
 def build(bld):
     version(bld)

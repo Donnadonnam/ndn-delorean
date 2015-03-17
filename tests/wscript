@@ -42,14 +42,18 @@ def build(bld):
             use='core-objects',
             headers='../common.hpp boost-test.hpp',
             install_path=None,
+            defines=['TEST_HOME_PATH=\"%s/home-tests\"' %(bld.bldnode)],
           )
 
         # unit tests
         unit_tests = bld.program(
             target='../unit-tests',
             features='cxx cxxprogram',
-            source=bld.path.ant_glob(['core/**/*.cpp', 'daemon/**/*.cpp']),
+            source=bld.path.ant_glob(['core/**/*.t.cpp', 'daemon/**/*.t.cpp']),
             use='core-objects daemon-objects unit-tests-base unit-tests-main',
             includes='.',
             install_path=None,
+            defines=['TEST_DB_PATH=\"%s/db-tests\"' %(bld.bldnode),
+                     'TEST_KEYCHAIN_PATH=\"%s/keychain-tests\"' %(bld.bldnode),
+                     'TEST_LOGGER_PATH=\"%s/logger-tests\"' %(bld.bldnode)],
           )

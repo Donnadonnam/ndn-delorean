@@ -19,24 +19,37 @@
  * See AUTHORS.md for complete list of nsl authors and contributors.
  */
 
+#ifndef NSL_TESTS_DB_FIXTURE_HPP
+#define NSL_TESTS_DB_FIXTURE_HPP
 
-#ifndef NSL_CORE_TLV_HPP
-#define NSL_CORE_TLV_HPP
+#include "db.hpp"
+#include <boost/filesystem.hpp>
 
 namespace nsl {
-namespace tlv {
+namespace tests {
 
-/**
- * @brief Type value of leaf related TLVs
- */
-enum {
-  LoggerLeaf  = 128, // 0x80
-  Timestamp   = 129, // 0x81
-  DataSeqNo   = 130, // 0x82
-  SignerSeqNo = 131  // 0x83
+class DbFixture
+{
+public:
+  DbFixture()
+    : m_dbTmpPath(boost::filesystem::path(TEST_DB_PATH) / "DbTest")
+  {
+    db.open(m_dbTmpPath.c_str());
+  }
+
+  ~DbFixture()
+  {
+    boost::filesystem::remove_all(m_dbTmpPath);
+  }
+
+protected:
+  boost::filesystem::path m_dbTmpPath;
+
+public:
+  Db db;
 };
 
-} // namespace tlv
+} // namespace tests
 } // namespace nsl
 
-#endif // NSL_CORE_TLV_HPP
+#endif // NSL_TESTS_DB_FIXTURE_HPP

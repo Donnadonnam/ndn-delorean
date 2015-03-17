@@ -16,61 +16,41 @@
  * You should have received a copy of the GNU General Public License along with
  * NSL, e.g., in COPYING.md file.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author Peizhen Guo <patrick.guopz@gmail.com>
+ * See AUTHORS.md for complete list of nsl authors and contributors.
  */
-#ifndef NLS_CORE_INTERMEDIATE_NODE_HPP
-#define NLS_CORE_INTERMEDIATE_NODE_HPP
 
-#include <stddef.h>
-#include <math.h>
-#include <ndn-cxx/util/crypto.hpp>
-#include "node.hpp"
+#ifndef NSL_TESTS_TREE_GENERATOR_HPP
+#define NSL_TESTS_TREE_GENERATOR_HPP
 
+#include "sub-tree-binary.hpp"
 
 namespace nsl {
+namespace tests {
 
-
-class IntermediateNode : public Node
+class TreeGenerator
 {
 public:
+  static ndn::ConstBufferPtr
+  getHash(const Node::Index& idx,
+          const NonNegativeInteger& nextLeafSeqNo,
+          bool useEmpty = true);
 
-  IntermediateNode()
-    : Node()
-  {
-  }
+  static shared_ptr<SubTreeBinary>
+  getSubTreeBinary(const Node::Index& index,
+                   const NonNegativeInteger& nextLeafSeqNo,
+                   bool useEmpty = true);
 
-  IntermediateNode(uint64_t sequenceNumber, uint64_t level, time_t timestamp)
-    : Node(sequenceNumber, level, timestamp), m_isFull(false)
-  {
-  }
+  static ndn::ConstBufferPtr
+  getLeafHash();
 
-  IntermediateNode(const IntermediateNode& new_node)
-    :Node(new_node.getIndex().number, new_node.getIndex().level, 0)
-  {
-    m_isFull = new_node.isFull();
-    this->setHash(new_node.getHash());
-  }
-
-  ~IntermediateNode()
-  {
-  }
-
-  bool
-  setIsFull(uint64_t totalLeafNum);
-
-  bool
-  isFull() const;
-
-  void
-  computeHash(ndn::ConstBufferPtr hash_l, ndn::ConstBufferPtr hash_r);
-
-  void
-  computeHashOneSide(ndn::ConstBufferPtr hash_l);
+public:
+  static const Name LOGGER_NAME;
 
 private:
-  bool m_isFull;
+  static ndn::ConstBufferPtr LEAF_HASH;
 };
 
+} // namespace tests
 } // namespace nsl
 
-#endif // NLS_CORE_INTERMEDIATE_NODE_HPP
+#endif // NSL_TESTS_TREE_GENERATOR_HPP
