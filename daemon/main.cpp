@@ -19,8 +19,71 @@
  * \author Yingdi Yu <yingdi@cs.ucla.edu>
  */
 
+#include "../core/logger.hpp"
+
+#include <boost/program_options/options_description.hpp>
+#include <boost/program_options/variables_map.hpp>
+#include <boost/program_options/parsers.hpp>
+#include <boost/filesystem.hpp>
+
+
 int
 main(int argc, char** argv)
 {
+  namespace po = boost::program_options;
+  namespace fs = boost::filesystem;
+
+  std::string configFile;
+
+  po::options_description description("General Usage\n"
+                                      "  nsl [-h] [-c config]\n"
+                                      "General options");
+  description.add_options()
+    ("help,h", "produce help message")
+    ("config,c", po::value<std::string>(&configFile))
+    ;
+
+  po::variables_map vm;
+  try {
+    po::store(po::parse_command_line(argc, argv, description), vm);
+    po::notify(vm);
+  }
+  catch (const std::exception& e) {
+    std::cerr << "ERROR: " << e.what() << std::endl;
+    std::cerr << description << std::endl;
+    return 1;
+  }
+
+  if (vm.count("help") != 0) {
+    std::cerr << description << std::endl;
+    return 0;
+  }
+
+  if (vm.count("config") == 0) {
+
+    if (!getenv("HOME")) {
+      configFile = "/usr/local/etc/ndn/nsl.conf";
+    }
+    else {
+      configFile = getenv("HOME");
+      configFile += "/.ndn/nsl.conf";
+    }
+
+    if (!fs::exists(fs::path(configFile))) {
+      std::cerr << "ERROR: config file is not available: " << configFile << std::endl;
+      return 1;
+    }
+  }
+
+  try {
+    ndn::Face face;
+    nsl::Logger(face, configFile);
+    face.processEvents();
+  }
+  catch (std::runtime_error& e) {
+    std::cerr << e.what() << std::endl;
+    return 1;
+  }
+
   return 0;
 }
