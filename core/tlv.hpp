@@ -33,7 +33,18 @@ enum {
   LoggerLeaf  = 128, // 0x80
   Timestamp   = 129, // 0x81
   DataSeqNo   = 130, // 0x82
-  SignerSeqNo = 131  // 0x83
+  SignerSeqNo = 131, // 0x83
+
+  LogResponse = 144, // 0x90
+  ResultCode  = 145, // 0x91
+  ResultMsg   = 146 // 0x92
+};
+
+enum {
+  LogResponse_Accept       = 0,
+  LogResponse_Error_Tree   = 1,
+  LogResponse_Error_Policy = 2,
+  LogResponse_Error_Signer = 3
 };
 
 } // namespace tlv
