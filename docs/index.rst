@@ -1,10 +1,9 @@
-NSL: NDN Signature Logger
-=========================
+NDN DeLorean: An Authentication System for Data Archives in Named Data Networking
+=================================================================================
 
-NSL is a Logging System that can be used to validate data with long lifetime.
+Named Data Networking (NDN) enables data-centric security in network communication by mandating digital signatures on network-layer data packets. Since the lifetime of some data can extend to many years, they out-live the lifetime of their signatures.
 
-Please submit any bugs or issues to the `NSL issue tracker
-<http://redmine.named-data.net/projects/nsl/issues>`__.
+*NDN DeLorean* is an authentication framework to ensure the long-term authenticity of long-lived data, taking a publicly auditable bookkeeping service approach to keep permanent proofs of data signatures and the times the signatures were generated.
 
 NSL Documentation
 -----------------
@@ -13,7 +12,6 @@ NSL Documentation
    :hidden:
    :maxdepth: 3
 
-   README
    INSTALL
    manpages
    design
@@ -34,10 +32,6 @@ Documentation for ndn-cxx developers and contributors
 License
 -------
 
-NSL is an open source project licensed under conditions of GNU Lesser General Public License.
-For more information about the license, refer to
-`COPYING <https://github.com/named-data/nsl/blob/master/COPYING>`_.
+NDN DeLorean is an open source project licensed under conditions of GNU Lesser General Public License. For more information about the license, refer to `COPYING <https://github.com/named-data/nsl/blob/master/COPYING>`_.
 
-While the license does not require it, we really would appreciate it if
-others would share their contributions to the library if they are
-willing to do so under the same license.
+While the license does not require it, we really would appreciate it if others would share their contributions to the library if they are willing to do so under the same license.

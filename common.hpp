@@ -1,39 +1,39 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /**
- * Copyright (c) 2014,  Regents of the University of California
+ * Copyright (c) 2014-2017, Regents of the University of California
  *
- * This file is part of NSL (NDN Signature Logger).
- * See AUTHORS.md for complete list of NSL authors and contributors.
+ * This file is part of NDN DeLorean, An Authentication System for Data Archives in
+ * Named Data Networking.  See AUTHORS.md for complete list of NDN DeLorean authors
+ * and contributors.
  *
- * NSL is free software: you can redistribute it and/or modify it under the terms
- * of the GNU General Public License as published by the Free Software Foundation,
- * either version 3 of the License, or (at your option) any later version.
+ * NDN DeLorean is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * NSL is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- * PURPOSE.  See the GNU General Public License for more details.
+ * NDN DeLorean is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * NSL, e.g., in COPYING.md file.  If not, see <http://www.gnu.org/licenses/>.
- *
- * \author Yingdi Yu <yingdi@cs.ucla.edu>
+ * You should have received a copy of the GNU General Public License along with NDN
+ * DeLorean, e.g., in COPYING.md file.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NSL_COMMON_HPP
-#define NSL_COMMON_HPP
+#ifndef NDN_DELOREAN_COMMON_HPP
+#define NDN_DELOREAN_COMMON_HPP
 
 #include "config.hpp"
 
-#ifdef NSL_HAVE_TESTS
-#define NSL_VIRTUAL_WITH_TESTS virtual
-#define NSL_PUBLIC_WITH_TESTS_ELSE_PROTECTED public
-#define NSL_PUBLIC_WITH_TESTS_ELSE_PRIVATE public
-#define NSL_PROTECTED_WITH_TESTS_ELSE_PRIVATE protected
+#ifdef NDN_DELOREAN_HAVE_TESTS
+#define NDN_DELOREAN_VIRTUAL_WITH_TESTS virtual
+#define NDN_DELOREAN_PUBLIC_WITH_TESTS_ELSE_PROTECTED public
+#define NDN_DELOREAN_PUBLIC_WITH_TESTS_ELSE_PRIVATE public
+#define NDN_DELOREAN_PROTECTED_WITH_TESTS_ELSE_PRIVATE protected
 #else
-#define NSL_VIRTUAL_WITH_TESTS
-#define NSL_PUBLIC_WITH_TESTS_ELSE_PROTECTED protected
-#define NSL_PUBLIC_WITH_TESTS_ELSE_PRIVATE private
-#define NSL_PROTECTED_WITH_TESTS_ELSE_PRIVATE private
+#define NDN_DELOREAN_VIRTUAL_WITH_TESTS
+#define NDN_DELOREAN_PUBLIC_WITH_TESTS_ELSE_PROTECTED protected
+#define NDN_DELOREAN_PUBLIC_WITH_TESTS_ELSE_PRIVATE private
+#define NDN_DELOREAN_PROTECTED_WITH_TESTS_ELSE_PRIVATE private
 #endif
 
 #include <cstddef>
@@ -90,4 +90,4 @@ namespace time = ndn::time;
 
 } // namespace nsl
 
-#endif // NSL_COMMON_HPP
+#endif // NDN_DELOREAN_COMMON_HPP

@@ -1,28 +1,30 @@
 # -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 """
-Copyright (c) 2014,  Regents of the University of California
+Copyright (c) 2014-2017, Regents of the University of California
 
-This file is part of NSL (NDN Signature Logger).
-See AUTHORS.md for complete list of NSL authors and contributors.
+This file is part of NDN DeLorean, An Authentication System for Data Archives in
+Named Data Networking.  See AUTHORS.md for complete list of NDN DeLorean authors
+and contributors.
 
-NSL is free software: you can redistribute it and/or modify it under the terms
-of the GNU General Public License as published by the Free Software Foundation,
-either version 3 of the License, or (at your option) any later version.
+NDN DeLorean is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
 
-NSL is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the GNU General Public License for more details.
+NDN DeLorean is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with
-NSL, e.g., in COPYING.md file.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with NDN
+DeLorean, e.g., in COPYING.md file.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from waflib import Logs, Utils, Context
 import os
 
 VERSION = "0.1.0"
-APPNAME = "nsl"
+APPNAME = "ndn-delorean"
 
 def options(opt):
     opt.load(['compiler_cxx', 'gnu_dirs', 'c_osx'])
@@ -30,7 +32,7 @@ def options(opt):
               'sqlite3', 'doxygen', 'sphinx_build'],
              tooldir=['.waf-tools'])
 
-    opt = opt.add_option_group('NSL Options')
+    opt = opt.add_option_group('NDN DeLorean Options')
 
     opt.add_option('--with-tests', action='store_true', default=False, dest='with_tests',
                    help='''build unit tests''')
@@ -78,9 +80,9 @@ def configure(conf):
     if not conf.options.with_sqlite_locking:
         conf.define('DISABLE_SQLITE3_FS_LOCKING', 1)
 
-    conf.define('DEFAULT_CONFIG_FILE', '%s/ndn/nsl.conf' % conf.env['SYSCONFDIR'])
+    conf.define('DEFAULT_CONFIG_FILE', '%s/ndn/ndn-delorean.conf' % conf.env['SYSCONFDIR'])
 
-    conf.write_config_header('config.hpp', define_prefix='NSL_')
+    conf.write_config_header('config.hpp', define_prefix='NDN_DELOREAN_')
 
 def build(bld):
     version(bld)
@@ -122,7 +124,7 @@ def build(bld):
         export_includes='daemon',
         )
 
-    bld(target='bin/nsl',
+    bld(target='bin/ndn-delorean',
         features='cxx cxxprogram',
         source='daemon/main.cpp',
         use='daemon-objects',
@@ -135,19 +137,19 @@ def build(bld):
         bld.recurse("tools")
 
     bld(features="subst",
-        source='nsl.conf.sample.in',
-        target='nsl.conf.sample',
+        source='ndn-delorean.conf.sample.in',
+        target='ndn-delorean.conf.sample',
         install_path="${SYSCONFDIR}/ndn",
         )
 
-    if bld.env['SPHINX_BUILD']:
-        bld(features="sphinx",
-            builder="man",
-            outdir="docs/manpages",
-            config="docs/conf.py",
-            source=bld.path.ant_glob('docs/manpages/**/*.rst'),
-            install_path="${MANDIR}/",
-            VERSION=VERSION)
+    # if bld.env['SPHINX_BUILD']:
+    #     bld(features="sphinx",
+    #         builder="man",
+    #         outdir="docs/manpages",
+    #         config="docs/conf.py",
+    #         source=bld.path.ant_glob('docs/manpages/**/*.rst'),
+    #         install_path="${MANDIR}/",
+    #         VERSION=VERSION)
 
 def docs(bld):
     from waflib import Options
@@ -197,7 +199,7 @@ def version(ctx):
     Context.g_module.VERSION_SPLIT = [v for v in VERSION_BASE.split('.')]
 
     try:
-        cmd = ['git', 'describe', '--match', 'nsl-*']
+        cmd = ['git', 'describe', '--match', 'ndn-delorean-*']
         p = Utils.subprocess.Popen(cmd, stdout=Utils.subprocess.PIPE,
                                    stderr=None, stdin=None)
         out = p.communicate()[0].strip()

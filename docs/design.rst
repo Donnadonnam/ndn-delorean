@@ -1,7 +1,7 @@
 .. _design:
 
-NSL Design Document
-==============
+NDN DeLorean Design Document
+============================
 
 .. toctree::
    design-doc/merkle
