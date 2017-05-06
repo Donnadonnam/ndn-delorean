@@ -166,9 +166,9 @@ Leaf::wireEncode(ndn::EncodingImpl<TAG>& block) const
 {
   size_t totalLength = 0;
 
-  totalLength += ndn::prependNonNegativeIntegerBlock(block, tlv::SignerSeqNo, m_signerSeqNo);
-  totalLength += ndn::prependNonNegativeIntegerBlock(block, tlv::DataSeqNo, m_dataSeqNo);
-  totalLength += ndn::prependNonNegativeIntegerBlock(block, tlv::Timestamp, m_timestamp);
+  totalLength += prependNonNegativeIntegerBlock(block, tlv::SignerSeqNo, m_signerSeqNo);
+  totalLength += prependNonNegativeIntegerBlock(block, tlv::DataSeqNo, m_dataSeqNo);
+  totalLength += prependNonNegativeIntegerBlock(block, tlv::Timestamp, m_timestamp);
   totalLength += m_dataName.wireEncode(block);
 
   totalLength += block.prependVarNumber(totalLength);

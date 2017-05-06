@@ -178,8 +178,7 @@ MerkleTree::getNewRoot(const Node::Index& idx)
   m_pendingTrees[newRoot->getPeakIndex().level] = newRoot;
   m_rootSubTree = newRoot;
 
-  bool result = newRoot->updateLeaf(idx.seqNo + idx.range, oldRoot->getRoot()->getHash());
-  BOOST_ASSERT(result);
+  newRoot->updateLeaf(idx.seqNo + idx.range, oldRoot->getRoot()->getHash());
 
   // create a sibling
   getNewSibling(idx);
@@ -210,8 +209,7 @@ MerkleTree::getNewSibling(const Node::Index& idx)
       // std::cerr << "seqNo: " << seqNo << std::endl;
       // std::cerr << "parent: " << parent->getRoot()->getIndex().level << ", " <<
       //                            parent->getRoot()->getIndex().seqNo << std::endl;
-      bool result = parent->updateLeaf(seqNo, hash);
-      BOOST_ASSERT(result);
+      parent->updateLeaf(seqNo, hash);
     });
 
   m_pendingTrees[newSibling->getPeakIndex().level] = newSibling;

@@ -87,8 +87,7 @@ Logger::addSelfSignedCert(ndn::IdentityCertificate& cert, const Timestamp& times
   Leaf leaf(cert.getFullName(), timestamp, dataSeqNo, dataSeqNo, m_leafPrefix);
 
   if (m_merkleTree.addLeaf(dataSeqNo, leaf.getHash())) {
-    bool result = m_db.insertLeafData(leaf, cert);
-    BOOST_ASSERT(result);
+    m_db.insertLeafData(leaf, cert);
     m_db.getLeaf(dataSeqNo);
   }
   else
@@ -102,7 +101,7 @@ Logger::initializeKeys()
 {
   Name certName = m_keyChain.createIdentity(m_loggerName);
 
-  Name dskKeyName = m_keyChain.generateEcdsaKeyPair(m_loggerName);
+  Name dskKeyName = m_keyChain.generateEcKeyPair(m_loggerName);
   std::vector<ndn::CertificateSubjectDescription> subjectDescription;
   auto dskCert =
     m_keyChain.prepareUnsignedIdentityCertificate(dskKeyName, m_loggerName,

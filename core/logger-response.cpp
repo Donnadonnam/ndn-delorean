@@ -54,9 +54,9 @@ LoggerResponse::wireEncode(ndn::EncodingImpl<TAG>& block) const
                                                m_msg.size());
   }
   else {
-    totalLength += ndn::prependNonNegativeIntegerBlock(block, tlv::DataSeqNo, m_dataSeqNo);
+    totalLength += prependNonNegativeIntegerBlock(block, tlv::DataSeqNo, m_dataSeqNo);
   }
-  totalLength += ndn::prependNonNegativeIntegerBlock(block, tlv::ResultCode, m_code);
+  totalLength += prependNonNegativeIntegerBlock(block, tlv::ResultCode, m_code);
 
   totalLength += block.prependVarNumber(totalLength);
   totalLength += block.prependVarNumber(tlv::LogResponse);
