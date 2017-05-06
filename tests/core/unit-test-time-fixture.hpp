@@ -26,7 +26,8 @@
 
 #include <boost/asio.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace tests {
 
 class UnitTestTimeFixture
@@ -64,6 +65,7 @@ public:
 };
 
 } // namespace tests
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_TESTS_UNIT_TESTS_UNIT_TEST_TIME_FIXTURE_HPP

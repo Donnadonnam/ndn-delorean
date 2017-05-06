@@ -26,7 +26,8 @@
 #include "util/non-negative-integer.hpp"
 #include <ndn-cxx/encoding/buffer.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 class LoggerResponse
 {
@@ -93,6 +94,7 @@ private:
   mutable Block m_wire;
 };
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_CORE_LOGGER_RESPONSE_HPP

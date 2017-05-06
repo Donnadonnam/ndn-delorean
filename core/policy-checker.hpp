@@ -30,7 +30,8 @@
 #include <ndn-cxx/security/identity-certificate.hpp>
 
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 class PolicyChecker
 {
@@ -71,6 +72,7 @@ private:
   DataRuleList m_dataRules;
 };
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_CORE_POLICY_CHECKER_HPP

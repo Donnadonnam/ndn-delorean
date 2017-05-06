@@ -23,7 +23,8 @@
 
 #include <ndn-cxx/util/digest.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 bool
 Auditor::doesExist(const NonNegativeInteger& seqNo,
@@ -74,7 +75,7 @@ Auditor::doesExist(const NonNegativeInteger& seqNo,
   size_t childLevel = 0;
   ndn::ConstBufferPtr childHash = hash;
 
-  NonNegativeInteger parentSeqMask = (~0) << 1;
+  NonNegativeInteger parentSeqMask = (~0ul) << 1;
   NonNegativeInteger parentSeqNo = childSeqNo & parentSeqMask;
   size_t parentLevel = 1;
 
@@ -237,4 +238,5 @@ Auditor::loadProof(std::map<Node::Index, ConstSubTreeBinaryPtr>& trees,
   return true;
 }
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

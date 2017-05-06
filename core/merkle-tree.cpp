@@ -21,7 +21,8 @@
 
 #include "merkle-tree.hpp"
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 MerkleTree::MerkleTree(Db& db)
   : m_db(db)
@@ -215,4 +216,5 @@ MerkleTree::getNewSibling(const Node::Index& idx)
   m_pendingTrees[newSibling->getPeakIndex().level] = newSibling;
 }
 
-}// namespace nsl
+} // namespace delorean
+} // namespace ndn

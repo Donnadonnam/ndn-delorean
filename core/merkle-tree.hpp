@@ -27,7 +27,8 @@
 #include "sub-tree-binary.hpp"
 #include <vector>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 class MerkleTree
 {
@@ -103,6 +104,7 @@ private:
   std::map<size_t, shared_ptr<SubTreeBinary>> m_pendingTrees;
 };
 
-}// namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_CORE_MERKLE_TREE_HPP

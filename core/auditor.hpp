@@ -29,7 +29,8 @@
 #include <ndn-cxx/encoding/buffer.hpp>
 #include <vector>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 class Auditor
 {
@@ -57,6 +58,7 @@ NDN_DELOREAN_PUBLIC_WITH_TESTS_ELSE_PRIVATE:
             const Name& loggerName);
 };
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_CORE_AUDITOR_HPP

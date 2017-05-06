@@ -26,7 +26,8 @@
 #include "config.hpp"
 #include <ndn-cxx/util/regex.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace conf {
 
 class KeyLocatorCheckerFactory;
@@ -122,6 +123,7 @@ private:
 
 
 } // namespace conf
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_CONF_KEY_LOCATOR_CHECKER_HPP

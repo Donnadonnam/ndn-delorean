@@ -23,7 +23,8 @@
 #include "tlv.hpp"
 #include "conf/config-file.hpp"
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 const int Logger::N_DATA_FETCHING_RETRIAL = 2;
 
@@ -302,4 +303,5 @@ Logger::makeLogResponse(const Interest& reqInterest, const LoggerResponse& respo
 }
 
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

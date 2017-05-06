@@ -29,7 +29,8 @@
 
 struct sqlite3;
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 class Db : noncopyable
 {
@@ -79,6 +80,7 @@ private:
   NonNegativeInteger m_nextLeafSeqNo;
 };
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_CORE_DB_HPP

@@ -25,7 +25,8 @@
 #include "filter.hpp"
 #include "checker.hpp"
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace conf {
 
 class Rule
@@ -68,6 +69,7 @@ private:
 };
 
 } // namespace conf
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_CONF_RULE_HPP

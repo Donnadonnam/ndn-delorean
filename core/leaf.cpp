@@ -25,7 +25,8 @@
 #include <ndn-cxx/encoding/block-helpers.hpp>
 #include <ndn-cxx/util/crypto.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 const Name Leaf::EMPTY_NAME;
 const size_t Leaf::N_LOGGER_LEAF_SUFFIX = 4;
@@ -251,4 +252,5 @@ Leaf::wireDecode(const Block& wire)
     throw Error("No more sub-TLV in LoggerLeaf");
 }
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

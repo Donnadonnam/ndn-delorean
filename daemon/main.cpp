@@ -19,13 +19,13 @@
  * DeLorean, e.g., in COPYING.md file.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "common.hpp"
 #include "../core/logger.hpp"
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/parsers.hpp>
 #include <boost/filesystem.hpp>
-
 
 int
 main(int argc, char** argv)
@@ -62,11 +62,11 @@ main(int argc, char** argv)
   if (vm.count("config") == 0) {
 
     if (!getenv("HOME")) {
-      configFile = "/usr/local/etc/ndn/nsl.conf";
+      configFile = NDN_DELOREAN_DEFAULT_CONFIG_FILE;
     }
     else {
       configFile = getenv("HOME");
-      configFile += "/.ndn/nsl.conf";
+      configFile += "/.ndn/ndn-delorean.conf";
     }
 
     if (!fs::exists(fs::path(configFile))) {
@@ -77,7 +77,7 @@ main(int argc, char** argv)
 
   try {
     ndn::Face face;
-    nsl::Logger(face, configFile);
+    ndn::delorean::Logger(face, configFile);
     face.processEvents();
   }
   catch (std::runtime_error& e) {

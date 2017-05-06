@@ -22,10 +22,12 @@
 #ifndef NDN_DELOREAN_UTIL_NON_NEGATIVE_INTEGER_HPP
 #define NDN_DELOREAN_UTIL_NON_NEGATIVE_INTEGER_HPP
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 typedef uint64_t NonNegativeInteger;
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_UTIL_NON_NEGATIVE_INTEGER_HPP

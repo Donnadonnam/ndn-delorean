@@ -24,7 +24,8 @@
 #include <ndn-cxx/util/digest.hpp>
 #include <boost/lexical_cast.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 ndn::ConstBufferPtr Node::EMPTY_HASH;
 
@@ -121,4 +122,5 @@ Node::getEmptyHash()
   return EMPTY_HASH;
 }
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

@@ -28,7 +28,8 @@
 
 #include <boost/filesystem.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace tests {
 
 class IdentityFixture : public UnitTestTimeFixture
@@ -71,6 +72,7 @@ protected:
 };
 
 } // namespace tests
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_TESTS_IDENTITY_FIXTURE_HPP

@@ -24,7 +24,8 @@
 
 #include "sub-tree-binary.hpp"
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace tests {
 
 class TreeGenerator
@@ -51,6 +52,7 @@ private:
 };
 
 } // namespace tests
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_TESTS_TREE_GENERATOR_HPP

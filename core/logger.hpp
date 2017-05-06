@@ -28,11 +28,13 @@
 #include "policy-checker.hpp"
 #include "merkle-tree.hpp"
 #include "util/non-negative-integer.hpp"
+
 #include <ndn-cxx/face.hpp>
 #include <ndn-cxx/security/key-chain.hpp>
 #include <ndn-cxx/security/validator-config.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 class Logger
 {
@@ -135,6 +137,7 @@ private:
   PolicyChecker m_policyChecker;
 };
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_CORE_LOGGER_HPP

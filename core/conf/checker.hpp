@@ -30,7 +30,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace conf {
 
 class Checker
@@ -93,6 +94,7 @@ private:
 };
 
 } // namespace conf
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_CONF_CHECKER_HPP

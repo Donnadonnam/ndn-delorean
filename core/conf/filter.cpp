@@ -23,7 +23,8 @@
 
 #include <boost/algorithm/string.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace conf {
 
 Filter::~Filter()
@@ -154,4 +155,5 @@ FilterFactory::createNameFilter(const ConfigSection& configSection)
 }
 
 } // namespace conf
+} // namespace delorean
 } // namespace ndn

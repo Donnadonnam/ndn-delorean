@@ -24,7 +24,8 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace conf {
 
 typedef boost::property_tree::ptree ConfigSection;
@@ -40,6 +41,7 @@ public:
 };
 
 } // namespace conf
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_CONF_CONFIG_HPP

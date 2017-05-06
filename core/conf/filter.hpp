@@ -26,7 +26,8 @@
 #include "config.hpp"
 #include <ndn-cxx/util/regex.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace conf {
 
 /**
@@ -105,6 +106,7 @@ private:
 };
 
 } // namespace conf
+} // namespace delorean
 } // namespace ndn
 
 #endif // NDN_DELOREAN_CONF_FILTER_HPP

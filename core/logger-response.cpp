@@ -22,7 +22,8 @@
 #include "logger-response.hpp"
 #include "tlv.hpp"
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 LoggerResponse::LoggerResponse()
   : m_code(-1)
@@ -128,4 +129,5 @@ LoggerResponse::wireDecode(const Block& wire)
     throw Error("No more sub-TLV in log response");
 }
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

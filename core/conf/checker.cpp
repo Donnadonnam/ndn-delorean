@@ -23,7 +23,8 @@
 
 #include <boost/algorithm/string.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace conf {
 
 Checker::~Checker()
@@ -173,4 +174,5 @@ CheckerFactory::getSigType(const std::string& sigType)
 }
 
 } // namespace conf
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

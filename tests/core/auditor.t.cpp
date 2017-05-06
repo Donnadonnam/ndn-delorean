@@ -26,7 +26,8 @@
 #include <boost/mpl/list.hpp>
 #include "boost-test.hpp"
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace tests {
 
 BOOST_AUTO_TEST_SUITE(TestAuditor)
@@ -210,4 +211,5 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(ConsistencyProof, P, ConsistencyProofTestParams)
 BOOST_AUTO_TEST_SUITE_END()
 
 } // namespace tests
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

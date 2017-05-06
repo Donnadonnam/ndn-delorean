@@ -22,7 +22,8 @@
 #include "config-file.hpp"
 #include <boost/property_tree/info_parser.hpp>
 #include <boost/filesystem.hpp>
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace conf {
 
 ConfigFile::ConfigFile(const std::string& filename)
@@ -94,4 +95,5 @@ ConfigFile::parse()
 }
 
 } // namespace conf
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

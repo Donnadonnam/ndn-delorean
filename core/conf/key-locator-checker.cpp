@@ -23,7 +23,8 @@
 
 #include <boost/algorithm/string.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace conf {
 
 KeyLocatorChecker::~KeyLocatorChecker()
@@ -274,4 +275,5 @@ KeyLocatorCheckerFactory::createKeyLocatorNameChecker(const ConfigSection& confi
 }
 
 } // namespace conf
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

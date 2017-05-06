@@ -22,7 +22,8 @@
 #ifndef NDN_DELOREAN_CORE_TLV_HPP
 #define NDN_DELOREAN_CORE_TLV_HPP
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace tlv {
 
 /**
@@ -47,6 +48,7 @@ enum {
 };
 
 } // namespace tlv
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_CORE_TLV_HPP

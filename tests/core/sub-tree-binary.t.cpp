@@ -25,7 +25,8 @@
 #include <ndn-cxx/util/digest.hpp>
 #include "boost-test.hpp"
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace tests {
 
 class SubTreeBinaryTestFixture
@@ -689,4 +690,5 @@ BOOST_AUTO_TEST_CASE(SubTreePeakIndexConvert)
 BOOST_AUTO_TEST_SUITE_END()
 
 } // namespace tests
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

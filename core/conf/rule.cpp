@@ -21,7 +21,8 @@
 
 #include "rule.hpp"
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace conf {
 
 Rule::Rule(const std::string& id)
@@ -78,4 +79,5 @@ Rule::check(const Data& data)
 }
 
 } // namespace conf
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

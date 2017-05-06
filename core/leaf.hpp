@@ -27,7 +27,8 @@
 #include "util/timestamp.hpp"
 #include <ndn-cxx/encoding/buffer.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 class Leaf
 {
@@ -138,6 +139,7 @@ private:
   Name m_loggerName;
 };
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_CORE_LEAF_HPP

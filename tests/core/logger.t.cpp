@@ -27,7 +27,8 @@
 
 #include "boost-test.hpp"
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace tests {
 
 class LoggerFixture : public IdentityFixture
@@ -35,8 +36,8 @@ class LoggerFixture : public IdentityFixture
 {
 public:
   LoggerFixture()
-    : face1(ndn::util::makeDummyClientFace(io, {true, true}))
-    , face2(ndn::util::makeDummyClientFace(io, {true, true}))
+    : face1(io, {true, true})
+    , face2(io, {true, true})
     , readInterestOffset1(0)
     , readDataOffset1(0)
     , readInterestOffset2(0)
@@ -53,10 +54,10 @@ public:
   {
     bool hasPassed = false;
 
-    checkFace(face1->sentInterests, readInterestOffset1, *face2, hasPassed);
-    checkFace(face1->sentDatas, readDataOffset1, *face2, hasPassed);
-    checkFace(face2->sentInterests, readInterestOffset2, *face1, hasPassed);
-    checkFace(face2->sentDatas, readDataOffset2, *face1, hasPassed);
+    checkFace(face1.sentInterests, readInterestOffset1, face2, hasPassed);
+    checkFace(face1.sentData, readDataOffset1, face2, hasPassed);
+    checkFace(face2.sentInterests, readInterestOffset2, face1, hasPassed);
+    checkFace(face2.sentData, readDataOffset2, face1, hasPassed);
 
     return hasPassed;
   }
@@ -78,10 +79,10 @@ public:
   void
   clear()
   {
-    face1->sentDatas.clear();
-    face1->sentInterests.clear();
-    face2->sentDatas.clear();
-    face2->sentInterests.clear();
+    face1.sentData.clear();
+    face1.sentInterests.clear();
+    face2.sentData.clear();
+    face2.sentInterests.clear();
 
     readInterestOffset1 = 0;
     readDataOffset1 = 0;
@@ -90,8 +91,8 @@ public:
   }
 
 public:
-  shared_ptr<ndn::util::DummyClientFace> face1;
-  shared_ptr<ndn::util::DummyClientFace> face2;
+  ndn::util::DummyClientFace face1;
+  ndn::util::DummyClientFace face2;
 
   size_t readInterestOffset1;
   size_t readDataOffset1;
@@ -197,7 +198,7 @@ BOOST_AUTO_TEST_CASE(Basic)
   fs::path certPath = fs::path(TEST_LOGGER_PATH) / "trust-anchor.cert";
   ndn::io::save(*rootCert, certPath.string());
 
-  Logger logger(*face1, configPath.string());
+  Logger logger(face1, configPath.string());
 
   BOOST_CHECK_EQUAL(logger.getLoggerName(), Name("/test/logger"));
   BOOST_CHECK_EQUAL(logger.getTreePrefix(), Name("/test/logger/tree"));
@@ -214,26 +215,26 @@ BOOST_AUTO_TEST_CASE(Basic)
   leafInterestName.appendNumber(0);
   auto leafInterest = make_shared<Interest>(leafInterestName);
 
-  face1->receive(*leafInterest);
+  face1.receive(*leafInterest);
   advanceClocks(time::milliseconds(2), 100);
 
-  BOOST_CHECK_EQUAL(face1->sentDatas.size(), 1);
-  BOOST_CHECK(leafInterestName.isPrefixOf(face1->sentDatas[0].getName()));
+  BOOST_CHECK_EQUAL(face1.sentData.size(), 1);
+  BOOST_CHECK(leafInterestName.isPrefixOf(face1.sentData[0].getName()));
 
-  face1->sentDatas.clear();
+  face1.sentData.clear();
 
   Name treeInterestName("/test/logger/tree");
   treeInterestName.appendNumber(0);
   treeInterestName.appendNumber(0);
   auto treeInterest = make_shared<Interest>(treeInterestName);
 
-  face1->receive(*treeInterest);
+  face1.receive(*treeInterest);
   advanceClocks(time::milliseconds(2), 100);
 
-  BOOST_CHECK_EQUAL(face1->sentDatas.size(), 1);
-  BOOST_CHECK(treeInterestName.isPrefixOf(face1->sentDatas[0].getName()));
+  BOOST_CHECK_EQUAL(face1.sentData.size(), 1);
+  BOOST_CHECK(treeInterestName.isPrefixOf(face1.sentData[0].getName()));
 
-  face1->sentDatas.clear();
+  face1.sentData.clear();
 
   Name tld("/ndn/tld");
   Name tldKeyName = m_keyChain.generateRsaKeyPair(tld);
@@ -246,8 +247,8 @@ BOOST_AUTO_TEST_CASE(Basic)
   m_keyChain.signByIdentity(*tldCert, root);
   m_keyChain.addCertificate(*tldCert);
 
-  face2->setInterestFilter(tldCert->getName().getPrefix(-1),
-    [&] (const ndn::InterestFilter&, const Interest&) { face2->put(*tldCert); },
+  face2.setInterestFilter(tldCert->getName().getPrefix(-1),
+    [&] (const ndn::InterestFilter&, const Interest&) { face2.put(*tldCert); },
     ndn::RegisterPrefixSuccessCallback(),
     [] (const Name&, const std::string&) {});
   advanceClocks(time::milliseconds(2), 100);
@@ -259,7 +260,7 @@ BOOST_AUTO_TEST_CASE(Basic)
   auto logInterest = make_shared<Interest>(logInterestName);
   m_keyChain.sign(*logInterest, tldCert->getName());
 
-  face1->receive(*logInterest);
+  face1.receive(*logInterest);
   do {
     advanceClocks(time::milliseconds(2), 100);
   } while (passPacket());
@@ -276,11 +277,11 @@ BOOST_AUTO_TEST_CASE(Basic)
   leafInterestName2.appendNumber(1);
   auto leafInterest2 = make_shared<Interest>(leafInterestName2);
 
-  face1->receive(*leafInterest2);
+  face1.receive(*leafInterest2);
   advanceClocks(time::milliseconds(2), 100);
 
-  BOOST_CHECK_EQUAL(face1->sentDatas.size(), 1);
-  BOOST_CHECK(leafInterestName2.isPrefixOf(face1->sentDatas[0].getName()));
+  BOOST_CHECK_EQUAL(face1.sentData.size(), 1);
+  BOOST_CHECK(leafInterestName2.isPrefixOf(face1.sentData[0].getName()));
   clear();
 
 
@@ -290,19 +291,19 @@ BOOST_AUTO_TEST_CASE(Basic)
   treeInterestName2.appendNumber(0);
   auto treeInterest2 = make_shared<Interest>(treeInterestName2);
 
-  face1->receive(*treeInterest2);
+  face1.receive(*treeInterest2);
   advanceClocks(time::milliseconds(2), 100);
 
-  BOOST_CHECK_EQUAL(face1->sentDatas.size(), 1);
-  BOOST_CHECK(treeInterestName2.isPrefixOf(face1->sentDatas[0].getName()));
+  BOOST_CHECK_EQUAL(face1.sentData.size(), 1);
+  BOOST_CHECK(treeInterestName2.isPrefixOf(face1.sentData[0].getName()));
   clear();
 
 
   auto data = make_shared<Data>(Name("/ndn/tld/data"));
   m_keyChain.sign(*data, tldCert->getName());
 
-  face2->setInterestFilter(data->getName(),
-    [&] (const ndn::InterestFilter&, const Interest&) { face2->put(*data); },
+  face2.setInterestFilter(data->getName(),
+    [&] (const ndn::InterestFilter&, const Interest&) { face2.put(*data); },
     ndn::RegisterPrefixSuccessCallback(),
     [] (const Name&, const std::string&) {});
   advanceClocks(time::milliseconds(2), 100);
@@ -314,7 +315,7 @@ BOOST_AUTO_TEST_CASE(Basic)
   auto logInterest2 = make_shared<Interest>(logInterestName2);
   m_keyChain.sign(*logInterest2, tldCert->getName());
 
-  face1->receive(*logInterest2);
+  face1.receive(*logInterest2);
   do {
     advanceClocks(time::milliseconds(2), 100);
   } while (passPacket());
@@ -332,4 +333,5 @@ BOOST_AUTO_TEST_CASE(Basic)
 BOOST_AUTO_TEST_SUITE_END()
 
 } // namespace tests
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

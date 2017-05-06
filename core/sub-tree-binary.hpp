@@ -24,7 +24,8 @@
 
 #include "node.hpp"
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 typedef std::function<void(const Node::Index&)> CompleteCallback;
 typedef std::function<void(const Node::Index&,
@@ -177,6 +178,7 @@ private:
 typedef shared_ptr<SubTreeBinary> SubTreeBinaryPtr;
 typedef shared_ptr<const SubTreeBinary> ConstSubTreeBinaryPtr;
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_CORE_SUB_TREE_HPP

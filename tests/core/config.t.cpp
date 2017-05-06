@@ -26,7 +26,8 @@
 
 #include "boost-test.hpp"
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace tests {
 
 BOOST_AUTO_TEST_SUITE(TestConfig)
@@ -109,4 +110,5 @@ BOOST_AUTO_TEST_CASE(Basic2)
 BOOST_AUTO_TEST_SUITE_END()
 
 } // namespace tests
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

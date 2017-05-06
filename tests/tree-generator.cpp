@@ -22,7 +22,8 @@
 #include "tree-generator.hpp"
 #include <ndn-cxx/util/digest.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace tests {
 
 const Name TreeGenerator::LOGGER_NAME("/logger/name");
@@ -113,4 +114,5 @@ TreeGenerator::getLeafHash()
 }
 
 } // namespace tests
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

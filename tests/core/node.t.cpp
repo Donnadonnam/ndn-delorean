@@ -25,7 +25,8 @@
 #include <ndn-cxx/encoding/buffer-stream.hpp>
 #include "boost-test.hpp"
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace tests {
 
 BOOST_AUTO_TEST_SUITE(TestNode)
@@ -124,4 +125,5 @@ BOOST_AUTO_TEST_CASE(NodeTest1)
 BOOST_AUTO_TEST_SUITE_END()
 
 } // namespace tests
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

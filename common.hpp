@@ -54,7 +54,8 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 using std::size_t;
 
@@ -88,6 +89,7 @@ using namespace ndn::tlv;
 namespace name = ndn::name;
 namespace time = ndn::time;
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_COMMON_HPP

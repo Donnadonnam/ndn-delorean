@@ -19,63 +19,60 @@
  * DeLorean, e.g., in COPYING.md file.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NDN_DELOREAN_CONF_CONFIG_FILE_HPP
-#define NDN_DELOREAN_CONF_CONFIG_FILE_HPP
+#include "test-common.hpp"
 
-#include "common.hpp"
-#include "config.hpp"
+#include <ndn-cxx/security/signature-sha256-with-rsa.hpp>
 
 namespace ndn {
 namespace delorean {
-namespace conf {
-class ConfigFile
+namespace tests {
+
+shared_ptr<Interest>
+makeInterest(const Name& name, uint32_t nonce)
 {
-public:
-  ConfigFile(const std::string& filename);
-
-  void
-  parse();
-
-  const std::string&
-  getConfFileName() const
-  {
-    return m_filename;
+  auto interest = make_shared<Interest>(name);
+  if (nonce != 0) {
+    interest->setNonce(nonce);
   }
+  return interest;
+}
 
-  const Name&
-  getLoggerName() const
-  {
-    return m_loggerName;
-  }
+shared_ptr<Data>
+makeData(const Name& name)
+{
+  auto data = make_shared<Data>(name);
+  return signData(data);
+}
 
-  const std::string&
-  getDbDir() const
-  {
-    return m_dbDir;
-  }
+Data&
+signData(Data& data)
+{
+  ndn::SignatureSha256WithRsa fakeSignature;
+  fakeSignature.setValue(ndn::encoding::makeEmptyBlock(tlv::SignatureValue));
+  data.setSignature(fakeSignature);
+  data.wireEncode();
 
-  const ConfigSection&
-  getPolicy() const
-  {
-    return m_policy;
-  }
+  return data;
+}
 
-  const ConfigSection&
-  getValidatorRule() const
-  {
-    return m_validatorRule;
-  }
+shared_ptr<Link>
+makeLink(const Name& name, std::initializer_list<std::pair<uint32_t, Name>> delegations)
+{
+  auto link = make_shared<Link>(name, delegations);
+  signData(link);
+  return link;
+}
 
-private:
-  std::string m_filename;
-  Name m_loggerName;
-  std::string m_dbDir;
-  ConfigSection m_policy;
-  ConfigSection m_validatorRule;
-};
+lp::Nack
+makeNack(const Name& name, uint32_t nonce, lp::NackReason reason)
+{
+  Interest interest(name);
+  interest.setNonce(nonce);
+  lp::Nack nack(std::move(interest));
+  nack.setReason(reason);
+  return nack;
+}
 
-} // namespace conf
+} // namespace tests
 } // namespace delorean
 } // namespace ndn
-
-#endif // NDN_DELOREAN_CONF_CONFIG_FILE_HPP

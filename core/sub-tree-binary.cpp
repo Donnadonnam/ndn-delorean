@@ -25,7 +25,8 @@
 #include <ndn-cxx/util/crypto.hpp>
 #include <ndn-cxx/security/digest-sha256.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 const time::milliseconds SubTreeBinary::INCOMPLETE_FRESHNESS_PERIOD(60000);
 const std::string SubTreeBinary::COMPONENT_COMPLETE("complete");
@@ -468,4 +469,5 @@ SubTreeBinary::updateParentNode(NodePtr node)
     updateParentNode(parentNode);
 }
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

@@ -26,7 +26,8 @@
 #include "util/non-negative-integer.hpp"
 #include <ndn-cxx/encoding/buffer.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 class Node
 {
@@ -119,6 +120,7 @@ private:
 typedef shared_ptr<Node> NodePtr;
 typedef shared_ptr<const Node> ConstNodePtr;
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_CORE_NODE_HPP

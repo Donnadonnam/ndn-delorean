@@ -25,7 +25,8 @@
 #include "db.hpp"
 #include <boost/filesystem.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace tests {
 
 class DbFixture
@@ -50,6 +51,7 @@ public:
 };
 
 } // namespace tests
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
 
 #endif // NDN_DELOREAN_TESTS_DB_FIXTURE_HPP

@@ -25,7 +25,8 @@
 #include <string>
 #include <boost/filesystem.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 static const std::string INITIALIZATION =
   "CREATE TABLE IF NOT EXISTS                    \n"
@@ -306,4 +307,5 @@ Db::getMaxLeafSeq()
   return m_nextLeafSeqNo;
 }
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

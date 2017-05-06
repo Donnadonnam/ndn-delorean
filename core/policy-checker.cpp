@@ -24,7 +24,8 @@
 #include <ndn-cxx/security/validator.hpp>
 #include <boost/algorithm/string.hpp>
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 
 using ndn::time::system_clock;
 
@@ -55,8 +56,6 @@ PolicyChecker::loadPolicy(const conf::ConfigSection& configSection)
 void
 PolicyChecker::onConfigRule(const conf::ConfigSection& section)
 {
-  using namespace nsl::conf;
-
   auto it = section.begin();
 
   // Get rule.id
@@ -82,7 +81,7 @@ PolicyChecker::onConfigRule(const conf::ConfigSection& section)
     throw Error("Unrecognized <rule.for>: " + usage + " in rule: " + ruleId);
 
   // Get rule.filter(s)
-  std::vector<shared_ptr<Filter> > filters;
+  std::vector<shared_ptr<conf::Filter> > filters;
   for (; it != section.end(); it++) {
     if (!boost::iequals(it->first, "filter")) {
       if (boost::iequals(it->first, "checker"))
@@ -90,17 +89,17 @@ PolicyChecker::onConfigRule(const conf::ConfigSection& section)
       throw Error("Expect <rule.filter> in rule: " + ruleId);
     }
 
-    filters.push_back(FilterFactory::create(it->second));
+    filters.push_back(conf::FilterFactory::create(it->second));
     continue;
   }
 
   // Get rule.checker(s)
-  std::vector<shared_ptr<Checker> > checkers;
+  std::vector<shared_ptr<conf::Checker> > checkers;
   for (; it != section.end(); it++) {
     if (!boost::iequals(it->first, "checker"))
       throw Error("Expect <rule.checker> in rule: " + ruleId);
 
-    checkers.push_back(CheckerFactory::create(it->second));
+    checkers.push_back(conf::CheckerFactory::create(it->second));
     continue;
   }
 
@@ -167,4 +166,5 @@ PolicyChecker::checkRule(const Data& data)
 }
 
 
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn

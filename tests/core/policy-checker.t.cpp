@@ -25,7 +25,8 @@
 
 #include "boost-test.hpp"
 
-namespace nsl {
+namespace ndn {
+namespace delorean {
 namespace tests {
 
 BOOST_FIXTURE_TEST_SUITE(TestPolicyChecker, IdentityFixture)
@@ -190,4 +191,5 @@ BOOST_AUTO_TEST_CASE(RuleCheck)
 BOOST_AUTO_TEST_SUITE_END()
 
 } // namespace tests
-} // namespace nsl
+} // namespace delorean
+} // namespace ndn
